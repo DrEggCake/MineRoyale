@@ -1,0 +1,8 @@
+name: MineRoyale
+version: '${version}'
+
+main: com.dreggcake.mineRoyale.MineRoyale
+api-version: '26.1.2'
+load: POSTWORLD
+
+authors: [ Lovekesh Solanki ]
