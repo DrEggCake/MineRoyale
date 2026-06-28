@@ -7,8 +7,8 @@ plugins {
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
-    maven ( url = "https://repo.aikar.co/content/groups/aikar/" )
-    maven ( url = "https://hub.spigotmc.org/nexus/content/groups/public/" )
+    maven("https://repo.aikar.co/content/groups/aikar/")
+    maven("https://hub.spigotmc.org/nexus/content/groups/public/")
 }
 
 dependencies {
@@ -22,9 +22,6 @@ java {
 
 tasks {
     runServer {
-        // Configure the Minecraft version for our task.
-        // This is the only required configuration besides applying the plugin.
-        // Your plugin's jar (or shadowJar if present) will be used automatically.
         minecraftVersion("26.1.2")
         jvmArgs("-Xms2G", "-Xmx2G")
     }
@@ -34,5 +31,19 @@ tasks {
         filesMatching("plugin.yml") {
             expand(props)
         }
+    }
+
+    shadowJar {
+        archiveBaseName.set(project.name)
+        archiveVersion.set(project.version.toString())
+        archiveClassifier.set("")
+
+        // probably never gonna conflict though :/
+        relocate("co.aikar.commands", "${project.group}.libs.acf")
+        relocate("co.aikar.locales", "${project.group}.libs.locales")
+    }
+
+    build {
+        dependsOn(shadowJar)
     }
 }
