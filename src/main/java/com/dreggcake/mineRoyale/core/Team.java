@@ -1,4 +1,4 @@
-package com.dreggcake.mineRoyale;
+package com.dreggcake.mineRoyale.core;
 
 public enum Team {
     RED,
