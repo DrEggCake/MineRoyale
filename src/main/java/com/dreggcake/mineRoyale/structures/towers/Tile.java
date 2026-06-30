@@ -10,4 +10,12 @@ public class Tile {
         this.index = index;
         this.location = location;
     }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
 }
