@@ -27,6 +27,13 @@ public class Arena {
     private final SideTower blueSideTower1;
     private final SideTower blueSideTower2;
 
+
+    private final Waypoint redWaypoint1;
+    private final Waypoint redWaypoint2;
+
+    private final Waypoint blueWaypoint1;
+    private final Waypoint blueWaypoint2;
+
     MineRoyale plugin;
 
     public Arena(MineRoyale plugin) {
@@ -49,6 +56,12 @@ public class Arena {
         blueKingTower = new KingTower(Team.BLUE, new Location(world, 426.5, 92.0, 83.5));
         blueSideTower1 = new SideTower(Team.BLUE, new Location(world, 430.5, 92.0, 88.5));
         blueSideTower2 = new SideTower(Team.BLUE, new Location(world, 419.5, 92.0, 88.5));
+
+        redWaypoint1 = new Waypoint(towerBridgeLane2.getLaneTiles().get(9).getLocation(), Team.RED);
+        redWaypoint2 = new Waypoint(towerBridgeLane1.getLaneTiles().get(9).getLocation(), Team.RED);
+
+        blueWaypoint1 = new Waypoint(towerBridgeLane1.getLaneTiles().get(6).getLocation(), Team.BLUE);
+        blueWaypoint2 = new Waypoint(towerBridgeLane2.getLaneTiles().get(6).getLocation(), Team.BLUE);
     }
 
     public TowerBridgeLane getTowerBridgeLane1() {
@@ -98,4 +111,21 @@ public class Arena {
     public SideTower getBlueSideTower2() {
         return blueSideTower2;
     }
+
+    public Waypoint getRedWaypoint1() {
+        return redWaypoint1;
+    }
+
+    public Waypoint getRedWaypoint2() {
+        return redWaypoint2;
+    }
+
+    public Waypoint getBlueWaypoint1() {
+        return blueWaypoint1;
+    }
+
+    public Waypoint getBlueWaypoint2() {
+        return blueWaypoint2;
+    }
+
 }

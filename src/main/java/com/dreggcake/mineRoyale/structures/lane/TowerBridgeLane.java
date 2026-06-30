@@ -8,6 +8,11 @@ import java.util.List;
 public class TowerBridgeLane {
     private Location firstTileLocation;
     private int totalTiles =  16;
+
+    public List<LaneTile> getLaneTiles() {
+        return laneTiles;
+    }
+
     private List<LaneTile> laneTiles = new ArrayList<>();
 
     public TowerBridgeLane(Location firstTileLocation) {
