@@ -2,6 +2,8 @@ package com.dreggcake.mineRoyale;
 
 import co.aikar.commands.PaperCommandManager;
 import com.dreggcake.mineRoyale.commands.SpawnCommand;
+import com.dreggcake.mineRoyale.core.Arena;
+import com.dreggcake.mineRoyale.core.UnitManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,6 +15,7 @@ public final class MineRoyale extends JavaPlugin {
     public void onEnable() {
         registerCommands();
         unitManager = new UnitManager();
+        Arena arena = new Arena(this);
 
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             unitManager.tick();

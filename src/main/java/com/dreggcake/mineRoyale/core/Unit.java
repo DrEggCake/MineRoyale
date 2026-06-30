@@ -1,5 +1,6 @@
-package com.dreggcake.mineRoyale;
+package com.dreggcake.mineRoyale.core;
 
+import com.dreggcake.mineRoyale.MineRoyale;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;

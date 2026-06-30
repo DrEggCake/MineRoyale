@@ -6,8 +6,8 @@ import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Subcommand;
 import com.dreggcake.mineRoyale.MineRoyale;
-import com.dreggcake.mineRoyale.Team;
-import com.dreggcake.mineRoyale.Unit;
+import com.dreggcake.mineRoyale.core.Team;
+import com.dreggcake.mineRoyale.core.Unit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -27,7 +27,7 @@ public class SpawnCommand extends BaseCommand {
     @Description("Main command")
     public void onDefault(CommandSender sender) {
         sender.sendMessage("No subcommand specified!");
-    }
+}
 
     @Subcommand("knight")
     @Description("Spawn a knight")

@@ -1,4 +1,4 @@
-package com.dreggcake.mineRoyale;
+package com.dreggcake.mineRoyale.core;
 
 import java.util.ArrayList;
 import java.util.List;
