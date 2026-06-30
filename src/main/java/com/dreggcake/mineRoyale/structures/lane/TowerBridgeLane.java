@@ -23,7 +23,7 @@ public class TowerBridgeLane {
     private void calculateLane() {
         for (int i = 0; i < totalTiles; i++) {
             Location location = firstTileLocation.clone();
-            location.setY(location.getY() + i);
+            location.setZ(location.getZ() + i);
             LaneTile tile = new LaneTile(i, location);
             laneTiles.add(tile);
         }
