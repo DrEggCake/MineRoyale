@@ -46,13 +46,13 @@ public final class PathFind {
         Team team = unit.getTeam();
 
         if (team == Team.BLUE) {
-            if (location.distanceSquared(blueKingTower.getBottomLeftLocation())
-                    < unit.getLocation().distanceSquared(redKingTower.getBottomLeftLocation()))
+            if (location.distanceSquared(blueKingTower.getOrigin())
+                    < unit.getLocation().distanceSquared(redKingTower.getOrigin()))
                 arenaSide = ArenaSide.OWN_SIDE;
             else arenaSide = ArenaSide.ENEMY_SIDE;
         } else {
-            if (location.distanceSquared(redKingTower.getBottomLeftLocation())
-                    < unit.getLocation().distanceSquared(blueKingTower.getBottomLeftLocation()))
+            if (location.distanceSquared(redKingTower.getOrigin())
+                    < unit.getLocation().distanceSquared(blueKingTower.getOrigin()))
                 arenaSide = ArenaSide.ENEMY_SIDE;
             else arenaSide = ArenaSide.OWN_SIDE;
         }
