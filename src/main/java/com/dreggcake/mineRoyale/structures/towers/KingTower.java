@@ -8,7 +8,7 @@ import java.util.List;
 
 public class KingTower {
     private final Team team;
-    private final Location bottomLeftLocation; // (0,0) of the 4x4
+    private final Location origin;
     private final List<Tile> centerTiles = new ArrayList<>();
     private final List<Tile> attackTiles = new ArrayList<>();
 
@@ -30,20 +30,23 @@ public class KingTower {
     };
     // @formatter:on
 
-    public KingTower(Team team, Location bottomLeftLocation) {
+    public KingTower(Team team, Location origin) {
         this.team = team;
-        this.bottomLeftLocation = bottomLeftLocation.clone();
+        this.origin = origin.clone();
 
         calculateTiles();
     }
 
     private void calculateTiles() {
+        int xDir = team == Team.RED ? 1 : -1;
+        int zDir = team == Team.RED ? 1 : -1;
+
         // Center tiles
         for (int i = 0; i < CENTER_OFFSETS.length; i++) {
             int dx = CENTER_OFFSETS[i][0];
             int dz = CENTER_OFFSETS[i][1];
 
-            Location tileLocation = bottomLeftLocation.clone().add(dx, 0, dz);
+            Location tileLocation = origin.clone().add(dx * xDir, 0, dz * zDir);
             centerTiles.add(new Tile(i, tileLocation));
         }
 
@@ -52,7 +55,7 @@ public class KingTower {
             int dx = ATTACK_OFFSETS[i][0];
             int dz = ATTACK_OFFSETS[i][1];
 
-            Location tileLocation = bottomLeftLocation.clone().add(dx, 0, dz);
+            Location tileLocation = origin.clone().add(dx * xDir, 0, dz * zDir);
             attackTiles.add(new Tile(i, tileLocation));
         }
     }
@@ -69,7 +72,7 @@ public class KingTower {
         return attackTiles;
     }
 
-    public Location getBottomLeftLocation() {
-        return bottomLeftLocation.clone();
+    public Location getOrigin() {
+        return origin.clone();
     }
 }

@@ -19,6 +19,12 @@ public class Unit {
         this.plugin = plugin;
     }
 
+    public void update() {
+        Vector direction = PathFind.getDirection(plugin, this);
+
+        livingEntity.setVelocity(direction.multiply(0.25));
+    }
+
     public Unit getTarget() {
         return target;
     }
@@ -35,9 +41,8 @@ public class Unit {
         return livingEntity;
     }
 
-    public void update() {
-        Vector direction = PathFind.getDirection(plugin, this);
-
-        livingEntity.setVelocity(direction.multiply(0.25));
+    public Location getLocation() {
+        return getLivingEntity().getLocation();
     }
+
 }

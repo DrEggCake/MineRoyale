@@ -16,4 +16,8 @@ public class UnitManager {
             unit.update();
         }
     }
+
+    public List<Unit> getUnits() {
+        return units;
+    }
 }
