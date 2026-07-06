@@ -110,8 +110,8 @@ public final class PathFind {
                             towerSide = UnitSide.LEFT_SIDE;
                         else towerSide = UnitSide.RIGHT_SIDE;
                         if (towerSide == UnitSide.LEFT_SIDE) {
-                            result = result.clone().setX(-1).setZ(0);
-                        } else result = result.clone().setX(1).setZ(0);
+                            result = result.clone().setX(1).setZ(0);
+                        } else result = result.clone().setX(-1).setZ(0);
                     }
                 }
             } else {
@@ -147,8 +147,8 @@ public final class PathFind {
                             towerSide = UnitSide.LEFT_SIDE;
                         else towerSide = UnitSide.RIGHT_SIDE;
                         if (towerSide == UnitSide.LEFT_SIDE) {
-                            result = result.clone().setX(-1).setZ(0);
-                        } else result = result.clone().setX(1).setZ(0);
+                            result = result.clone().setX(1).setZ(0);
+                        } else result = result.clone().setX(-1).setZ(0);
                     }
                 }
             }
