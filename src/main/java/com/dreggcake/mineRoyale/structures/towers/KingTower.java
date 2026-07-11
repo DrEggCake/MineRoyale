@@ -3,14 +3,9 @@ package com.dreggcake.mineRoyale.structures.towers;
 import com.dreggcake.mineRoyale.core.Team;
 import org.bukkit.Location;
 
-import java.util.ArrayList;
-import java.util.List;
+public class KingTower extends Tower {
 
-public class KingTower {
-    private final Team team;
     private final Location origin;
-    private final List<Tile> centerTiles = new ArrayList<>();
-    private final List<Tile> attackTiles = new ArrayList<>();
 
     // @formatter:off
     private static final int[][] CENTER_OFFSETS = {
@@ -31,45 +26,45 @@ public class KingTower {
     // @formatter:on
 
     public KingTower(Team team, Location origin) {
-        this.team = team;
+        super(team);
         this.origin = origin.clone();
-
         calculateTiles();
     }
 
-    private void calculateTiles() {
+    @Override
+    protected void calculateTiles() {
         int xDir = team == Team.RED ? 1 : -1;
         int zDir = team == Team.RED ? 1 : -1;
 
-        // Center tiles
         for (int i = 0; i < CENTER_OFFSETS.length; i++) {
             int dx = CENTER_OFFSETS[i][0];
             int dz = CENTER_OFFSETS[i][1];
 
-            Location tileLocation = origin.clone().add(dx * xDir, 0, dz * zDir);
-            centerTiles.add(new Tile(i, tileLocation));
+            centerTiles.add(new Tile(
+                    i,
+                    origin.clone().add(dx * xDir, 0, dz * zDir)
+            ));
         }
 
-        // Attack border
         for (int i = 0; i < ATTACK_OFFSETS.length; i++) {
             int dx = ATTACK_OFFSETS[i][0];
             int dz = ATTACK_OFFSETS[i][1];
 
-            Location tileLocation = origin.clone().add(dx * xDir, 0, dz * zDir);
-            attackTiles.add(new Tile(i, tileLocation));
+            attackTiles.add(new Tile(
+                    i,
+                    origin.clone().add(dx * xDir, 0, dz * zDir)
+            ));
         }
     }
 
-    public Team getTeam() {
-        return team;
+    @Override
+    public Location getLocation() {
+        return origin.clone();
     }
 
-    public List<Tile> getCenterTiles() {
-        return centerTiles;
-    }
-
-    public List<Tile> getAttackTiles() {
-        return attackTiles;
+    @Override
+    public boolean isKingTower() {
+        return true;
     }
 
     public Location getOrigin() {

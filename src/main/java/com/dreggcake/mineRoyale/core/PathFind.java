@@ -1,218 +1,219 @@
 package com.dreggcake.mineRoyale.core;
 
 import com.dreggcake.mineRoyale.MineRoyale;
-import com.dreggcake.mineRoyale.structures.lane.TowerBridgeLane;
-import com.dreggcake.mineRoyale.structures.lane.TowerTowerLane;
 import com.dreggcake.mineRoyale.structures.towers.KingTower;
 import com.dreggcake.mineRoyale.structures.towers.SideTower;
 import com.dreggcake.mineRoyale.structures.towers.Tile;
+import com.dreggcake.mineRoyale.structures.towers.Tower;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 public final class PathFind {
 
-    enum ArenaSide {
+    private enum ArenaSide {
         OWN_SIDE,
         ENEMY_SIDE
     }
 
-    enum UnitSide {
+    private enum UnitSide {
         LEFT_SIDE,
         RIGHT_SIDE
     }
 
     public static Vector getDirection(MineRoyale plugin, Unit unit) {
-        Vector result;
-        ArenaSide arenaSide;
-        UnitManager unitManager = plugin.getUnitManager();
         Arena arena = plugin.getArena();
-        KingTower redKingTower = arena.getRedKingTower();
-        SideTower redSideTower1 = arena.getRedSideTower1();
-        SideTower redSideTower2 = arena.getRedSideTower2();
-        TowerTowerLane redTowerTowerLane1 = arena.getRedTowerTowerLane1();
-        TowerTowerLane redTowerTowerLane2 = arena.getRedTowerTowerLane2();
-        Waypoint redWaypoint1 = arena.getRedWaypoint1();
-        Waypoint redWaypoint2 = arena.getRedWaypoint2();
-        KingTower blueKingTower = arena.getBlueKingTower();
-        SideTower blueSideTower1 = arena.getBlueSideTower1();
-        SideTower blueSideTower2 = arena.getBlueSideTower2();
-        TowerTowerLane blueTowerTowerLane1 = arena.getBlueTowerTowerLane1();
-        TowerTowerLane blueTowerTowerLane2 = arena.getBlueTowerTowerLane2();
-        Waypoint blueWaypoint1 = arena.getBlueWaypoint1();
-        Waypoint blueWaypoint2 = arena.getBlueWaypoint2();
-        TowerBridgeLane towerBridgeLane1 = arena.getTowerBridgeLane1();
-        TowerBridgeLane towerBridgeLane2 = arena.getTowerBridgeLane2();
         Location location = unit.getLocation();
         Team team = unit.getTeam();
 
+        if (getArenaSide(arena, location, team) == ArenaSide.OWN_SIDE) {
+            return getOwnSideDirection(arena, location, team);
+        }
+
+        return getEnemySideDirection(arena, location, team);
+    }
+
+    private static ArenaSide getArenaSide(Arena arena, Location location, Team team) {
+        Location ownKing = ownKing(arena, team).getLocation();
+        Location enemyKing = enemyKing(arena, team).getLocation();
+
         if (team == Team.BLUE) {
-            if (location.distanceSquared(blueKingTower.getOrigin())
-                    < unit.getLocation().distanceSquared(redKingTower.getOrigin()))
-                arenaSide = ArenaSide.OWN_SIDE;
-            else arenaSide = ArenaSide.ENEMY_SIDE;
-        } else {
-            if (location.distanceSquared(redKingTower.getOrigin())
-                    < unit.getLocation().distanceSquared(blueKingTower.getOrigin()))
-                arenaSide = ArenaSide.ENEMY_SIDE;
-            else arenaSide = ArenaSide.OWN_SIDE;
+            return location.distanceSquared(ownKing)
+                    < location.distanceSquared(enemyKing)
+                    ? ArenaSide.OWN_SIDE
+                    : ArenaSide.ENEMY_SIDE;
         }
 
-        if (arenaSide == ArenaSide.OWN_SIDE) {
-            UnitSide unitSide;
-            if (team == Team.BLUE) {
-                if (location.distanceSquared(blueWaypoint1.getLocation()) < location.distanceSquared(blueWaypoint2.getLocation()))
-                    unitSide = UnitSide.LEFT_SIDE;
-                else unitSide = UnitSide.RIGHT_SIDE;
-                if (unitSide == UnitSide.LEFT_SIDE)
-                    result = blueWaypoint1.getLocation().toVector().subtract(location.toVector()).normalize();
-                else result = blueWaypoint2.getLocation().toVector().subtract(location.toVector()).normalize();
-            } else {
-                if (location.distanceSquared(redWaypoint1.getLocation()) < location.distanceSquared(redWaypoint2.getLocation()))
-                    unitSide = UnitSide.LEFT_SIDE;
-                else unitSide = UnitSide.RIGHT_SIDE;
-                if (unitSide == UnitSide.LEFT_SIDE)
-                    result = redWaypoint1.getLocation().toVector().subtract(location.toVector()).normalize();
-                else result = redWaypoint2.getLocation().toVector().subtract(location.toVector()).normalize();
-            }
+        return location.distanceSquared(ownKing)
+                < location.distanceSquared(enemyKing)
+                ? ArenaSide.OWN_SIDE
+                : ArenaSide.ENEMY_SIDE;
+    }
 
-            Vector next = location.toVector().add(result).toBlockVector();
+    private static Vector getOwnSideDirection(Arena arena, Location location, Team team) {
+        Waypoint left = ownLeftWaypoint(arena, team);
+        Waypoint right = ownRightWaypoint(arena, team);
 
-            if (team == Team.BLUE) {
-                for (Tile tile : blueSideTower1.getCenterTiles()) {
-                    if (next.equals(tile.getLocation().toVector().toBlockVector())) {
-                        UnitSide towerSide;
-                        if (next.distanceSquared(blueSideTower1.getCenterTiles().get(0).getLocation().toVector())
-                                < next.distanceSquared(blueSideTower1.getCenterTiles().get(2).getLocation().toVector()))
-                            towerSide = UnitSide.LEFT_SIDE;
-                        else towerSide = UnitSide.RIGHT_SIDE;
-                        if (towerSide == UnitSide.LEFT_SIDE) {
-                            result = result.clone().setX(-1).setZ(0);
-                        } else result = result.clone().setX(1).setZ(0);
-                    }
-                }
-                for (Tile tile : blueSideTower2.getCenterTiles()) {
-                    if (next.equals(tile.getLocation().toVector().toBlockVector())) {
-                        UnitSide towerSide;
-                        if (next.distanceSquared(blueSideTower2.getCenterTiles().get(0).getLocation().toVector())
-                                < next.distanceSquared(blueSideTower2.getCenterTiles().get(2).getLocation().toVector()))
-                            towerSide = UnitSide.LEFT_SIDE;
-                        else towerSide = UnitSide.RIGHT_SIDE;
-                        if (towerSide == UnitSide.LEFT_SIDE) {
-                            result = result.clone().setX(-1).setZ(0);
-                        } else result = result.clone().setX(1).setZ(0);
-                    }
-                }
-                for (Tile tile : blueKingTower.getCenterTiles()) {
-                    if (next.equals(tile.getLocation().toVector().toBlockVector())) {
-                        UnitSide towerSide;
-                        if (next.distanceSquared(blueKingTower.getCenterTiles().get(0).getLocation().toVector())
-                                < next.distanceSquared(blueKingTower.getCenterTiles().get(3).getLocation().toVector()))
-                            towerSide = UnitSide.LEFT_SIDE;
-                        else towerSide = UnitSide.RIGHT_SIDE;
-                        if (towerSide == UnitSide.LEFT_SIDE) {
-                            result = result.clone().setX(1).setZ(0);
-                        } else result = result.clone().setX(-1).setZ(0);
-                    }
-                }
-            } else {
-                for (Tile tile : redSideTower1.getCenterTiles()) {
-                    if (next.equals(tile.getLocation().toVector().toBlockVector())) {
-                        UnitSide towerSide;
-                        if (next.distanceSquared(redSideTower1.getCenterTiles().get(0).getLocation().toVector())
-                                < next.distanceSquared(redSideTower1.getCenterTiles().get(2).getLocation().toVector()))
-                            towerSide = UnitSide.LEFT_SIDE;
-                        else towerSide = UnitSide.RIGHT_SIDE;
-                        if (towerSide == UnitSide.LEFT_SIDE) {
-                            result = result.clone().setX(-1).setZ(0);
-                        } else result = result.clone().setX(1).setZ(0);
-                    }
-                }
-                for (Tile tile : redSideTower2.getCenterTiles()) {
-                    if (next.equals(tile.getLocation().toVector().toBlockVector())) {
-                        UnitSide towerSide;
-                        if (next.distanceSquared(redSideTower2.getCenterTiles().get(0).getLocation().toVector())
-                                < next.distanceSquared(redSideTower2.getCenterTiles().get(2).getLocation().toVector()))
-                            towerSide = UnitSide.LEFT_SIDE;
-                        else towerSide = UnitSide.RIGHT_SIDE;
-                        if (towerSide == UnitSide.LEFT_SIDE) {
-                            result = result.clone().setX(-1).setZ(0);
-                        } else result = result.clone().setX(1).setZ(0);
-                    }
-                }
-                for (Tile tile : redKingTower.getCenterTiles()) {
-                    if (next.equals(tile.getLocation().toVector().toBlockVector())) {
-                        UnitSide towerSide;
-                        if (next.distanceSquared(redKingTower.getCenterTiles().get(0).getLocation().toVector())
-                                < next.distanceSquared(redKingTower.getCenterTiles().get(3).getLocation().toVector()))
-                            towerSide = UnitSide.LEFT_SIDE;
-                        else towerSide = UnitSide.RIGHT_SIDE;
-                        if (towerSide == UnitSide.LEFT_SIDE) {
-                            result = result.clone().setX(1).setZ(0);
-                        } else result = result.clone().setX(-1).setZ(0);
-                    }
-                }
-            }
-        } else {
-            UnitSide unitSide;
-            if (team == Team.BLUE) {
-                if (location.distanceSquared(redSideTower1.getCenterLocation()) < location.distanceSquared(redSideTower2.getCenterLocation()))
-                    unitSide = UnitSide.LEFT_SIDE;
-                else unitSide = UnitSide.RIGHT_SIDE;
-            } else {
-                if (location.distanceSquared(blueSideTower1.getCenterLocation()) < location.distanceSquared(blueSideTower2.getCenterLocation()))
-                    unitSide = UnitSide.LEFT_SIDE;
-                else unitSide = UnitSide.RIGHT_SIDE;
-            }
+        UnitSide side = nearestSide(
+                location,
+                left.getLocation(),
+                right.getLocation()
+        );
 
-            Location nearest = null;
-            if (unitSide == UnitSide.LEFT_SIDE) {
-                if (team == Team.BLUE) {
-                    for (Tile tile : redSideTower1.getCenterTiles()) {
-                        if (nearest == null || unit.getLocation().distanceSquared(tile.getLocation()) < unit.getLocation().distanceSquared(nearest)) {
-                            nearest = tile.getLocation();
-                        }
-                    }
-                } else {
-                    for (Tile tile : blueSideTower1.getCenterTiles()) {
-                        if (nearest == null || unit.getLocation().distanceSquared(tile.getLocation()) < unit.getLocation().distanceSquared(nearest)) {
-                            nearest = tile.getLocation();
-                        }
-                    }
-                }
-            } else {
-                if (team == Team.BLUE) {
-                    for (Tile tile : redSideTower2.getCenterTiles()) {
-                        if (nearest == null || unit.getLocation().distanceSquared(tile.getLocation()) < unit.getLocation().distanceSquared(nearest)) {
-                            nearest = tile.getLocation();
-                        }
-                    }
-                } else {
-                    for (Tile tile : blueSideTower2.getCenterTiles()) {
-                        if (nearest == null || unit.getLocation().distanceSquared(tile.getLocation()) < unit.getLocation().distanceSquared(nearest)) {
-                            nearest = tile.getLocation();
-                        }
-                    }
-                }
-            }
+        Location target = side == UnitSide.LEFT_SIDE
+                ? left.getLocation()
+                : right.getLocation();
 
-            Location newNearest = nearest;
-            if (team == Team.BLUE) {
-                for (Tile tile : redKingTower.getCenterTiles()) {
-                    if (unit.getLocation().distanceSquared(tile.getLocation()) < unit.getLocation().distanceSquared(newNearest)) {
-                        newNearest = tile.getLocation();
-                    }
-                }
-            } else {
-                for (Tile tile : blueKingTower.getCenterTiles()) {
-                    if (unit.getLocation().distanceSquared(tile.getLocation()) < unit.getLocation().distanceSquared(newNearest)) {
-                        newNearest = tile.getLocation();
-                    }
-                }
-            }
+        Vector result = direction(location, target);
 
-            result = newNearest.toVector().subtract(location.toVector()).normalize();
-        }
+        Vector next = location.toVector()
+                .add(result)
+                .toBlockVector();
+
+        result = avoidTower(result, next, ownLeftTower(arena, team));
+        result = avoidTower(result, next, ownRightTower(arena, team));
+        result = avoidTower(result, next, ownKing(arena, team));
 
         return result;
+    }
+
+    private static Vector getEnemySideDirection(Arena arena, Location location, Team team) {
+        SideTower leftTower = enemyLeftTower(arena, team);
+        SideTower rightTower = enemyRightTower(arena, team);
+        KingTower kingTower = enemyKing(arena, team);
+
+        UnitSide side = nearestSide(
+                location,
+                leftTower.getLocation(),
+                rightTower.getLocation()
+        );
+
+        Tower targetTower = side == UnitSide.LEFT_SIDE
+                ? leftTower
+                : rightTower;
+
+        Location nearest = nearestTile(targetTower, location);
+
+        for (Tile tile : kingTower.getCenterTiles()) {
+            if (location.distanceSquared(tile.getLocation())
+                    < location.distanceSquared(nearest)) {
+                nearest = tile.getLocation();
+            }
+        }
+
+        return direction(location, nearest);
+    }
+
+    private static Vector avoidTower(Vector direction, Vector next, Tower tower) {
+        for (Tile tile : tower.getCenterTiles()) {
+            if (next.equals(tile.getLocation().toVector().toBlockVector())) {
+
+                UnitSide towerSide;
+
+                if (tower.isKingTower()) {
+                    if (next.distanceSquared(tower.getCenterTiles().get(0).getLocation().toVector())
+                            < next.distanceSquared(tower.getCenterTiles().get(3).getLocation().toVector())) {
+                        towerSide = UnitSide.LEFT_SIDE;
+                    } else {
+                        towerSide = UnitSide.RIGHT_SIDE;
+                    }
+
+                    if (towerSide == UnitSide.LEFT_SIDE) {
+                        return direction.clone().setX(1).setZ(0);
+                    }
+
+                    return direction.clone().setX(-1).setZ(0);
+                }
+
+                if (next.distanceSquared(tower.getCenterTiles().get(0).getLocation().toVector())
+                        < next.distanceSquared(tower.getCenterTiles().get(2).getLocation().toVector())) {
+                    towerSide = UnitSide.LEFT_SIDE;
+                } else {
+                    towerSide = UnitSide.RIGHT_SIDE;
+                }
+
+                if (towerSide == UnitSide.LEFT_SIDE) {
+                    return direction.clone().setX(-1).setZ(0);
+                }
+
+                return direction.clone().setX(1).setZ(0);
+            }
+        }
+
+        return direction;
+    }
+
+    private static Location nearestTile(Tower tower, Location location) {
+        Location nearest = null;
+
+        for (Tile tile : tower.getCenterTiles()) {
+            if (nearest == null ||
+                    location.distanceSquared(tile.getLocation())
+                            < location.distanceSquared(nearest)) {
+                nearest = tile.getLocation();
+            }
+        }
+
+        return nearest;
+    }
+
+    private static UnitSide nearestSide(Location location, Location left, Location right) {
+        return location.distanceSquared(left)
+                < location.distanceSquared(right)
+                ? UnitSide.LEFT_SIDE
+                : UnitSide.RIGHT_SIDE;
+    }
+
+    private static Vector direction(Location from, Location to) {
+        return to.toVector()
+                .subtract(from.toVector())
+                .normalize();
+    }
+
+    private static KingTower ownKing(Arena arena, Team team) {
+        return team == Team.BLUE
+                ? arena.getBlueKingTower()
+                : arena.getRedKingTower();
+    }
+
+    private static KingTower enemyKing(Arena arena, Team team) {
+        return team == Team.BLUE
+                ? arena.getRedKingTower()
+                : arena.getBlueKingTower();
+    }
+
+    private static SideTower ownLeftTower(Arena arena, Team team) {
+        return team == Team.BLUE
+                ? arena.getBlueSideTower1()
+                : arena.getRedSideTower1();
+    }
+
+    private static SideTower ownRightTower(Arena arena, Team team) {
+        return team == Team.BLUE
+                ? arena.getBlueSideTower2()
+                : arena.getRedSideTower2();
+    }
+
+    private static SideTower enemyLeftTower(Arena arena, Team team) {
+        return team == Team.BLUE
+                ? arena.getRedSideTower1()
+                : arena.getBlueSideTower1();
+    }
+
+    private static SideTower enemyRightTower(Arena arena, Team team) {
+        return team == Team.BLUE
+                ? arena.getRedSideTower2()
+                : arena.getBlueSideTower2();
+    }
+
+    private static Waypoint ownLeftWaypoint(Arena arena, Team team) {
+        return team == Team.BLUE
+                ? arena.getBlueWaypoint1()
+                : arena.getRedWaypoint1();
+    }
+
+    private static Waypoint ownRightWaypoint(Arena arena, Team team) {
+        return team == Team.BLUE
+                ? arena.getBlueWaypoint2()
+                : arena.getRedWaypoint2();
     }
 }
